@@ -3,14 +3,21 @@
 
 #include<stdio.h>
 #include<stdint.h>
+#include<stdlib.h>
 
-typedef struct {
+typedef struct{
 	uint32_t version1  : 10;
 	uint32_t version2  : 10;
-	uint32_t version3  : 10;
-	uint32_t tile_size : 2;
+	uint32_t version3  : 12;
 	uint16_t width;
 	uint16_t height;
 }head_data;
+
+typedef struct{
+	uint8_t n1 : 2;
+	uint8_t n2 : 2;
+	uint8_t n3 : 2;
+	uint8_t n4 : 2;
+}extra_tile;
 
 #endif//BUILD_TILE_BUILDER

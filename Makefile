@@ -15,16 +15,16 @@ LINKFLUG_WIN =-Wl,--gc-sections -lraylib -lgdi32 -lwinmm
 all : build/genmap.out build/redmap.out
 
 build/redmap.out : build/redmap.o
-	cc $(debugflug) $< -o $@
+	$(cc) $(debugflug) $< -o $@
 
-build/redmap.o : redmap.c
-	cc -c $(debugflug) $< -o $@
+build/redmap.o : redmap.c btb.h
+	$(cc) -c $(debugflug) $< -o $@
 
 build/genmap.out : build/genmap.o
-	cc $(debugflug) $< -o $@
+	$(cc) $(debugflug) $< -o $@
 
-build/genmap.o : genmap.c
-	cc -c $(debugflug) $< -o $@
+build/genmap.o : genmap.c btb.h
+	$(cc) -c $(debugflug) $< -o $@
 # run : ./build/output.out build/*.so
 # 	./build/output.out
 # hotload : build/*.so
