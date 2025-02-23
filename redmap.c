@@ -1,5 +1,7 @@
 #include"btb.h"
 
+void readmap(FILE *fp);
+
 int main(int argc,char *argv[]){
 	if(argc < 2){
 		fprintf(stderr,"no input\n");
@@ -35,17 +37,26 @@ int main(int argc,char *argv[]){
 	for(int i = 0;i < extbyte;i++)
 		printf("%d %d %d %d\n",extlist[i].n1,extlist[i].n2,extlist[i].n3,extlist[i].n4);
 
-	int8_t *mapdata1 = NULL;
-	mapdata1 = malloc(sizeof(uint8_t) * hd.width * hd.height);
-	fread(mapdata1,sizeof(uint8_t) * hd.width * hd.height,1,fp);
+	//read map
+	void *mapdata[2] = {0};
+	mapdata[0] = malloc(sizeof(uint8_t) * hd.width * hd.height);
+	fread(mapdata[0],sizeof(uint8_t) * hd.width * hd.height,1,fp);
 
 	for(int y = 0;y < hd.height;y++){
 	for(int x = 0;x < hd.height;x++){
-		int32_t tile = mapdata1[(y * hd.width) + x];
-		if(tile < 0)
+		int8_t *tile = mapdata[0] + (y * hd.width) + x;
+		if(*tile < 0){
 			printf("X");
-		else
-			printf("%d",tile);
+			continue;
+		}
+		switch(*tile){
+			case 0:
+				printf(" ");
+				break;
+			default:
+				printf("%d",*tile);
+				break;
+		}
 	}
 		printf("\n");
 	}

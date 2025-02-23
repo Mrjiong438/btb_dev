@@ -15,6 +15,17 @@ int8_t map[map_height][map_width] = {
 		{-1,0,0,0,1,0,0,-1}
 };
 
+int16_t map2[map_height][map_width] = {
+		{-1,0,0,1,1,0,0,-1},
+		{0,0,0,1,1,0,0,0},
+		{0,0,1,0,1,0,0,0},
+		{0,0,1,0,1,0,0,0},
+		{0,1,0,0,1,0,0,0},
+		{1,1,1,1,1,1,1,1},
+		{0,0,0,0,1,0,0,0},
+		{-1,0,0,0,1,0,0,-1}
+};
+
 head_data hd = {
 	.version1  = 0,
 	.version2  = 1,
@@ -23,27 +34,57 @@ head_data hd = {
 	.height    = map_height,
 };
 
-uint8_t pages = 1;
-extra_tile et = {0,0,3,0};
+uint8_t pagenum = 0;
+extra_tile et[] = {
+	{0,0,3,0}
+};
+
+void writemap_p1(void *pages [],uint8_t pagenum,extra_tile et[],FILE *fp){
+	for(int p = 0;p <= pagenum;p++){
+		uint8_t tile_size = extra_tile_get(et,p) + 1;
+		void *mapptrD = pages[p],*mapptr = pages[p];
+		fwrite(mapptrD,tile_size,1,fp);
+	for(int i = 1;i < map_width * map_height;i++){
+		
+	}
+	}
+}
+
+void writemap(void *pages [],uint8_t pagenum,extra_tile et[],FILE *fp){
+	for(int p = 0;p <= pagenum;p++){
+		uint8_t tile_size = extra_tile_get(et,p) + 1;
+		void *mapptr = pages[p];
+	for(int i = 0;i < map_width * map_height;i++){
+		fwrite((mapptr + (i * tile_size)),tile_size,1,fp);
+	}
+	}
+}
 
 int main(){
 	printf("hd size:%zu\n",sizeof(head_data));
 	FILE *fp = NULL;
 	fp = fopen("./the4.btb","wb");
-	for(size_t i = 0;i < sizeof(head_data);i++){
-		/* printf("%x\n",); */
-		fputc(((char *)(&hd))[i],fp);
-	}
+	fwrite(&hd,sizeof(head_data),1,fp);
 
 	/* printf("et = %d\n",*((uint8_t *)(&et))); */
-	fputc(pages,fp);
-	fputc(*((uint8_t *)(&et)),fp);
+	/* fputc(pagenum,fp); */
+	fwrite(&pagenum,sizeof(pagenum),1,fp);
+	/* fputc(*((uint8_t *)(&et)),fp); */
+	uint8_t Z = ((pagenum + 1) / 4) + 1;
+	fwrite(et,sizeof(extra_tile),Z,fp);
 
-	for(int y = 0;y < map_height;y++)
-	for(int x = 0;x < map_width;x++){
-		uint8_t data = map[y][x];
-		fputc(data,fp);
-	}
+	writemap((void *[]){map},pagenum,et,fp);
+	/* for(int y = 0;y < map_height;y++) */
+	/* for(int x = 0;x < map_width;x++){ */
+	/* 	uint8_t data = map[y][x]; */
+	/* 	fputc(data,fp); */
+	/* } */
+
+	/* for(int y = 0;y < map_height;y++) */
+	/* for(int x = 0;x < map_width;x++){ */
+	/* 	uint16_t data = map2[y][x]; */
+	/* 	fputc(data,fp); */
+	/* } */
 	
 	fclose(fp);
 
