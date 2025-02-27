@@ -7,11 +7,9 @@
 #include<stdlib.h>
 
 typedef struct{
-	uint32_t version1  : 10;
-	uint32_t version2  : 10;
-	uint32_t version3  : 12;
 	uint16_t width;
 	uint16_t height;
+	char info[16];
 }head_data;
 
 typedef struct{
@@ -27,6 +25,24 @@ typedef union{
 	uint8_t  u8;
 }tile_data;
 
+uint8_t get_tile_size(extra_tile list[],uint8_t page){
+	uint8_t r;
+	switch(page % 4){
+		case 0:
+			r = list[page / 4].n1;
+			break;
+		case 1:
+			r = list[page / 4].n2;
+			break;
+		case 2:
+			r = list[page / 4].n3;
+			break;
+		case 3:
+			r = list[page / 4].n4;
+			break;
+	}
+	return r+1;
+}
 uint8_t extra_tile_get(extra_tile list[],uint8_t page){
 	uint8_t r;
 	switch(page % 4){

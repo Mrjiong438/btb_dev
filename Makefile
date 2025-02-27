@@ -1,29 +1,32 @@
 #cc game.c -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 
-.PHONY : all clean run hotload
+.PHONY : all clean run hotload check
 
 cc = gcc -Wall -Wextra
 debugflug = -Wno-unused-parameter
-object = build/main.o 
-object_win = build/winmain.o build/winsnaker.o build/winsnake.o
 CFLUG = -s -O3 -Os
 LINKFLUG =-Wl,--gc-sections -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
-LIB = -I ./raylib-5.5_linux_amd64/include -L ./raylib-5.5_linux_amd64/lib
-LIB_WIN = -I ./raylib-5.5_linux_amd64/include -L ./raylib-5.5_linux_amd64/lib
-LINKFLUG_WIN =-Wl,--gc-sections -lraylib -lgdi32 -lwinmm
+LIB =-lm
 
 all : build/genmap.out build/redmap.out
 
-build/redmap.out : build/redmap.o
-	$(cc) $(debugflug) $< -o $@
+check : build/genmap.out build/redmap.out
+	build/genmap.out
+	build/redmap.out the4.btb
+
+build/redmap.out : build/redmap.o build/stb_image.o
+	$(cc) $(debugflug) $^ -o $@ $(LIB)
 
 build/redmap.o : redmap.c btb.h
 	$(cc) -c $(debugflug) $< -o $@
 
-build/genmap.out : build/genmap.o
-	$(cc) $(debugflug) $< -o $@
+build/genmap.out : build/genmap.o build/stb_image.o
+	$(cc) $(debugflug) $^ -o $@ $(LIB)
 
 build/genmap.o : genmap.c btb.h
+	$(cc) -c $(debugflug) $< -o $@
+
+build/stb_image.o : stb_image.c
 	$(cc) -c $(debugflug) $< -o $@
 # run : ./build/output.out build/*.so
 # 	./build/output.out

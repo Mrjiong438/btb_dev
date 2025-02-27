@@ -17,11 +17,9 @@ int main(int argc,char *argv[]){
 	fread(&hd,sizeof(head_data),1,fp);
 
 	printf(
-			"version: %u.%u.%u\n"
+			"info: %s\n"
 			"map size: %ux%u\n",
-			hd.version1,
-			hd.version2,
-			hd.version3,
+			hd.info,
 			hd.width,
 			hd.height
 	);
@@ -34,13 +32,18 @@ int main(int argc,char *argv[]){
 	extra_tile *extlist = NULL;
 	extlist = malloc(sizeof(extra_tile) * (extbyte));
 	fread(extlist,sizeof(extra_tile),extbyte,fp);
-	for(int i = 0;i < extbyte;i++)
-		printf("%d %d %d %d\n",extlist[i].n1,extlist[i].n2,extlist[i].n3,extlist[i].n4);
+	/* for(int i = 0;i < extbyte;i++) */
+	/* 	printf("%d %d %d %d\n",extlist[i].n1,extlist[i].n2,extlist[i].n3,extlist[i].n4); */
+	for(int i = 0;i <= pages;i++)
+		printf("%d ",extra_tile_get(extlist,i));
+	printf("\n");
 
 	//read map
 	void *mapdata[2] = {0};
-	mapdata[0] = malloc(sizeof(uint8_t) * hd.width * hd.height);
-	fread(mapdata[0],sizeof(uint8_t) * hd.width * hd.height,1,fp);
+	for(int i = 0;i <= pages;i++){
+		mapdata[i] = malloc(get_tile_size(extlist,i) * sizeof(uint8_t) * hd.width * hd.height);
+		fread(mapdata[i],sizeof(uint8_t) * hd.width * hd.height,get_tile_size(extlist,i),fp);
+	}
 
 	for(int y = 0;y < hd.height;y++){
 	for(int x = 0;x < hd.height;x++){
