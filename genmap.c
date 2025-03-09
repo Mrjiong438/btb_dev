@@ -29,15 +29,15 @@ int16_t map2[map_height][map_width] = {
 head_data hd = {
 	.width     = map_width,
 	.height    = map_height,
-	.info      = "ver0.1.0      ."
+	.info      = "ver0.1.0"
 };
 
 uint8_t pagenum = 1;
-extra_tile et[] = {
+tile_byte_num et[] = {
 	{0,1,3,0}
 };
 
-/* void writemap_p1(void *pages [],uint8_t pagenum,extra_tile et[],FILE *fp){ */
+/* void writemap_p1(void *pages [],uint8_t pagenum,tile_byte_num et[],FILE *fp){ */
 /* 	for(int p = 0;p <= pagenum;p++){ */
 /* 		uint8_t tile_size = extra_tile_get(et,p) + 1; */
 /* 		void *mapptrD = pages[p],*mapptr = pages[p]; */
@@ -48,9 +48,9 @@ extra_tile et[] = {
 /* 	} */
 /* } */
 
-void writemap(void *pages [],uint8_t pagenum,extra_tile et[],FILE *fp){
+void writemap(void *pages [],uint8_t pagenum,tile_byte_num et[],FILE *fp){
 	for(int p = 0;p <= pagenum;p++){
-		uint8_t tile_size = extra_tile_get(et,p) + 1;
+		uint8_t tile_size = tile_byte_get(et,p) + 1;
 		void *mapptr = pages[p];
 	for(int i = 0;i < map_width * map_height;i++){
 		fwrite((mapptr + (i * tile_size)),tile_size,1,fp);
@@ -69,7 +69,7 @@ int main(){
 	fwrite(&pagenum,sizeof(pagenum),1,fp);
 	/* fputc(*((uint8_t *)(&et)),fp); */
 	uint8_t Z = ((pagenum + 1) / 4) + 1;
-	fwrite(et,sizeof(extra_tile),Z,fp);
+	fwrite(et,sizeof(tile_byte_num),Z,fp);
 
 	writemap((void *[]){map,map2},pagenum,et,fp);
 	/* for(int y = 0;y < map_height;y++) */
