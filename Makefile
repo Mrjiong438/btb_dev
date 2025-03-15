@@ -5,32 +5,48 @@
 cc = gcc -Wall -Wextra
 debugflug = -g -Wno-unused-parameter
 CFLUG = -s -O3 -Os
-LINKFLUG =-Wl,--gc-sections -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
-LIB =-lm
+LINKFLUG =-Wl,--gc-sections -lcglm -lglfw3 -lGL -lX11 -lpthread -lXrandr -lXi -ldl -lm
+LIB = -L./lib
+INCLUDE = -I./include
 
-all : build/genmap.out build/redmap.out
+all : build/genmap.out build/redmap.out build/edit.out
+
+clear :
+	rm -r build/*
 
 check : build/genmap.out build/redmap.out
 	build/genmap.out
 	build/redmap.out the4.btb
 
-build/redmap.out : build/redmap.o build/stb_image.o
+build/edit.out : build/edit.o build/glad.o build/gllib.o build/stb_image.o
+	$(cc) $(debugflug) $(LINKFLUG) $^ -o $@ $(LIB) $(INCLUDE) $(LINKFLUG)
+
+build/edit.o : edit.c
+	$(cc) -c $(debugflug) $< -o $@ $(INCLUDE)
+
+build/redmap.out : build/redmap.o
 	$(cc) $(debugflug) $^ -o $@ $(LIB)
 
-build/redmap.o : redmap.c btb.h
-	$(cc) -c $(debugflug) $< -o $@
+build/redmap.o : redmap.c include/btb.h
+	$(cc) -c $(debugflug) $< -o $@ $(INCLUDE)
 
-build/genmap.out : build/genmap.o build/stb_image.o
+build/genmap.out : build/genmap.o
 	$(cc) $(debugflug) $^ -o $@ $(LIB)
 
-build/genmap.o : genmap.c btb.h
-	$(cc) -c $(debugflug) $< -o $@
+build/genmap.o : genmap.c include/btb.h
+	$(cc) -c $(debugflug) $< -o $@ $(INCLUDE)
 
 build/stb_image.o : stb_image.c
-	$(cc) -c $(debugflug) $< -o $@
+	$(cc) -c $(debugflug) $< -o $@ $(INCLUDE)
 
 build/hotload.o : hotload.c
-	$(cc) -c $(debugflug) $< -o $@
+	$(cc) -c $(debugflug) $< -o $@ $(INCLUDE)
+
+build/glad.o : glad.c
+	gcc -c $< -o $@ $(INCLUDE)
+
+build/gllib.o : gllib.c include/gllib.h
+	gcc -c $< -o $@ $(INCLUDE)
 # run : ./build/output.out build/*.so
 # 	./build/output.out
 # hotload : build/*.so

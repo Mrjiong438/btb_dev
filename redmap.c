@@ -45,10 +45,8 @@ int main(int argc,char *argv[]){
 	for(int i = 0;i < pages;i++){
 		mapdata[i] = malloc((tile_byte_get(extlist,i) + 1) * sizeof(uint8_t) * hd.width * hd.height);
 		fread(mapdata[i],sizeof(uint8_t) * hd.width * hd.height,tile_byte_get(extlist,i) + 1,fp);
-		printmap(mapdata[i],hd.width,hd.height,tile_byte_get(extlist,i));
+		/* printmap(mapdata[i],hd.width,hd.height,tile_byte_get(extlist,i)); */
 	}
-
-	/* printmap(mapdata[1],hd.width,hd.height,tile_byte_get(extlist,1)); */
 
 	fclose(fp);
 
