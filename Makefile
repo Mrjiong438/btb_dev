@@ -3,7 +3,7 @@
 .PHONY : all clean run hotload check
 
 cc = gcc -Wall -Wextra
-debugflug = -Wno-unused-parameter
+debugflug = -g -Wno-unused-parameter
 CFLUG = -s -O3 -Os
 LINKFLUG =-Wl,--gc-sections -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 LIB =-lm
@@ -27,6 +27,9 @@ build/genmap.o : genmap.c btb.h
 	$(cc) -c $(debugflug) $< -o $@
 
 build/stb_image.o : stb_image.c
+	$(cc) -c $(debugflug) $< -o $@
+
+build/hotload.o : hotload.c
 	$(cc) -c $(debugflug) $< -o $@
 # run : ./build/output.out build/*.so
 # 	./build/output.out

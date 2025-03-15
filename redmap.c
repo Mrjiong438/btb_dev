@@ -1,6 +1,8 @@
 #include"btb.h"
 
 void readmap(FILE *fp);
+void printmap(void *mapdata,uint16_t width,uint16_t height,uint8_t size);
+uint32_t mapvalue(void *mapdata,size_t index,uint8_t size);
 
 int main(int argc,char *argv[]){
 	if(argc < 2){
@@ -40,31 +42,56 @@ int main(int argc,char *argv[]){
 
 	//read map
 	void *mapdata[2] = {0};
-	for(int i = 0;i <= pages;i++){
+	for(int i = 0;i < pages;i++){
 		mapdata[i] = malloc((tile_byte_get(extlist,i) + 1) * sizeof(uint8_t) * hd.width * hd.height);
 		fread(mapdata[i],sizeof(uint8_t) * hd.width * hd.height,tile_byte_get(extlist,i) + 1,fp);
+		printmap(mapdata[i],hd.width,hd.height,tile_byte_get(extlist,i));
 	}
 
-	for(int y = 0;y < hd.height;y++){
-	for(int x = 0;x < hd.height;x++){
-		int8_t *tile = mapdata[0] + (y * hd.width) + x;
-		if(*tile < 0){
-			printf("X");
-			continue;
-		}
-		switch(*tile){
+	/* printmap(mapdata[1],hd.width,hd.height,tile_byte_get(extlist,1)); */
+
+	fclose(fp);
+
+	return 0;
+}
+
+void readmap(FILE *fp);
+void printmap(void *mapdata,uint16_t width,uint16_t height,uint8_t size){
+	for(int y = 0;y < height;y++){
+	for(int x = 0;x < width;x++){
+		/* uint32_t tile = mapdata + (y * width) + x; */
+		uint32_t tile = mapvalue(mapdata,(y * width) + x,size);
+		switch(tile){
 			case 0:
 				printf(" ");
 				break;
+			case 3:
+				printf("X");
+				break;
 			default:
-				printf("%d",*tile);
+				printf("%u",tile);
 				break;
 		}
 	}
 		printf("\n");
 	}
+}
 
-	fclose(fp);
-
-	return 0;
+uint32_t mapvalue(void *mapdata,size_t index,uint8_t size){
+	uint32_t r;
+	switch(size){
+		case 0:
+			r = ((uint8_t *)mapdata)[index];
+			break;
+		case 1:
+			r = ((uint16_t *)mapdata)[index];
+			break;
+		case 2:
+			r = ((uint32_t *)mapdata)[index];
+			break;
+		case 3:
+		default:
+			break;
+	}
+	return r;
 }
