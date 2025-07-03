@@ -6,42 +6,13 @@
 #include<stdint.h>
 #include<stdlib.h>
 
-typedef struct{
+typedef struct{         /* max to 2^16 x 2^16*/
+	char     info[64];
 	uint16_t width;
 	uint16_t height;
-	char     info[64];
+        uint8_t  page;
 }head_data;
 
-typedef struct{
-	uint8_t n1 : 2;
-	uint8_t n2 : 2;
-	uint8_t n3 : 2;
-	uint8_t n4 : 2;
-}tile_byte_num;
-
-typedef union{
-	uint32_t u32;
-	uint16_t u16;
-	uint8_t  u8;
-}tile_data;
-
-uint8_t tile_byte_get(tile_byte_num list[],uint8_t page){
-	uint8_t r;
-	switch(page % 4){
-		case 0:
-			r = list[page / 4].n1;
-			break;
-		case 1:
-			r = list[page / 4].n2;
-			break;
-		case 2:
-			r = list[page / 4].n3;
-			break;
-		case 3:
-			r = list[page / 4].n4;
-			break;
-	}
-	return r;
-}
+typedef int16_t mapsize_t;
 
 #endif//BUILD_TILE_BUILDER
