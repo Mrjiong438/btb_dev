@@ -1,15 +1,6 @@
-#define BUILD_TILE_BUILDER_IMPLEMENTATION
+#define BUILD_TILE_BUILDER_IMPLEMENTATION_R
 #include"btb.h"
 #include <stdio.h>
-
-/* void mapread(btb_head_data *hd,btb_map_t ***mapdata,FILE *fp){ */
-/*     fread(hd,sizeof(btb_head_data),1,fp); */
-/*     *mapdata = malloc(sizeof((**mapdata)) * hd->page); */
-/*     for(uint8_t i = 0;i < hd->page;i++){ */
-/*         (*mapdata)[i] = malloc(sizeof(***mapdata) * hd->width * hd->height); */
-/*         fread((*mapdata)[i],sizeof(***mapdata),hd->width * hd->height,fp); */
-/*     } */
-/* } */
 
 void printmap(btb_map_t *mapdata,uint16_t width,uint16_t height){
     putc('\n',stdout);
@@ -43,19 +34,17 @@ int main(int argc,char *argv[]){
     }
 
     btb_head_data hd = {0};
+    char *info = NULL;
     btb_map_t **mapdata = NULL;
-    btb_mapread(&hd,&mapdata,fp);
+    btb_mapread(&hd,&info,&mapdata,fp);
     fclose(fp);
 
-    printf(
-            "info: %s\n"
-            "map size: %ux%u\n"
-            "pagenum: %u\n",
-            hd.info,
-            hd.width,
-            hd.height,
-            hd.page
-    );
+    printf("info: %s\n",info);
+    /* for(unsigned int i = 0;i < 9;i++){ */
+    /*     putchar(info[i]); */
+    /* } */
+    printf("map size: %ux%u\n",hd.width,hd.height);
+    printf("pagenum: %u\n",hd.page);
 
     for(int i = 0;i < hd.page;i++){
         printmap(mapdata[i],hd.width,hd.height);

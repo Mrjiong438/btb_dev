@@ -1,4 +1,4 @@
-#define BUILD_TILE_BUILDER_IMPLEMENTATION
+#define BUILD_TILE_BUILDER_IMPLEMENTATION_W
 #include"btb.h"
 
 #define map_width 8
@@ -30,7 +30,6 @@ btb_map_t map2[map_height * map_width] = {
 btb_head_data hd = {
     .width     = map_width,
     .height    = map_height,
-    .info      = "ver0.1.0",
     .page = 2
 };
 
@@ -46,10 +45,12 @@ int main(){
     FILE *fp = NULL;
     fp = fopen("./the4.btb","wb");
     /* fwrite(&hd,sizeof(hd),1,fp); */
+    /* .info      = "ver0.1.0", */
 
-    printf("size:%zu\n",sizeof(btb_head_data) + sizeof(map) + sizeof(map2));
 
-    btb_mapwrite((btb_map_t *[]){map,map2},hd,fp);
+    printf("size:%zu\n",sizeof(btb_head_data) + sizeof(size_t) + sizeof(map) + sizeof(map2));
+
+    btb_mapwrite((btb_map_t *[]){map,map2},hd,"ver0.1.0",9,fp);
     
     fclose(fp);
 
