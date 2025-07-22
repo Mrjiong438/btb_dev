@@ -53,16 +53,16 @@ void btb_mapwrite(btb_data_t src,FILE *fp){
 #ifdef  BUILD_TILE_BUILDER_IMPLEMENTATION_R
 
 void btb_mapread(btb_data_t *dest,FILE *fp){
-    fread(dest->info_size,sizeof(dest.info_size),1,fp);
+    fread(&dest->info_size,sizeof(dest->info_size),1,fp);
     /* printf("z: %zu\n",z); */
     dest->info = malloc(dest->info_size);
     fread(dest->info,dest->info_size,1,fp);
-    fread(dest->width,sizeof(data->width) * 2 + sizeof(data->pagenum),1,fp);
+    fread(&dest->width,sizeof(dest->width) * 2 + sizeof(dest->pagenum),1,fp);
     dest->maps = malloc(sizeof(dest->maps[0]) * dest->pagenum);
     dest->data = malloc(sizeof(dest->maps[0].data[0]) * dest->pagenum);
-    for(btb_pagenum_t i = 0;i < pagenum;i++)
-        dest->maps[i] =dest->data + i * dest->width * dest->height;
-    fread(dest->data,sizeof(dest->maps[0].data[0]),dest->width * dest->height,fp);
+    for(btb_pagenum_t i = 0;i < dest->pagenum;i++)
+        dest->maps[i].data = dest->data + i * dest->width * dest->height;
+    fread(dest->data,sizeof(dest->maps[0].data[0]),dest->width * dest->height * dest->pagenum,fp);
 }
 
 #endif//BUILD_TILE_BUILDER_IMPLEMENTATION_R

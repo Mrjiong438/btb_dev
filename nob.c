@@ -13,6 +13,8 @@ int main(int argc, char **argv)
 
     nob_cmd_append(&cmd, "gcc", "-Wall", "-Wextra", DEBUG, "genmap.c", "-o", BUILD_FOLDER"genmap");
     if (!nob_cmd_run_sync_and_reset(&cmd)) return 1;
+    nob_cmd_append(&cmd, "gcc", "-Wall", "-Wextra", DEBUG, "redmap.c", "-o", BUILD_FOLDER"redmap");
+    if (!nob_cmd_run_sync_and_reset(&cmd)) return 1;
 
     return 0;
 }

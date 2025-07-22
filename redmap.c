@@ -2,11 +2,11 @@
 #include"btb.h"
 #include <stdio.h>
 
-void printmap(btb_map_t *mapdata,uint16_t width,uint16_t height){
+void printmap(btb_map_t map,uint16_t width,uint16_t height){
     putc('\n',stdout);
     for(uint16_t y = 0;y < height;y++){
     for(uint16_t x = 0;x < width;x++){
-        switch(mapdata[x + y * width]){
+        switch(map.data[x + y * width]){
             case 0:
                 printf(" ");
                 break;
@@ -14,7 +14,7 @@ void printmap(btb_map_t *mapdata,uint16_t width,uint16_t height){
                 printf("X");
                 break;
             default:
-                printf("%u",mapdata[x + y * width]);
+                printf("%u",map.data[x + y * width]);
                 break;
         }
     }
@@ -32,24 +32,21 @@ int main(int argc,char *argv[]){
         fprintf(stderr,"open file fail\n");
         return -1;
     }
+    btb_data_t mapdata = {0};
 
-    btb_head_data hd = {0};
-    char *info = NULL;
-    btb_map_t **mapdata = NULL;
-    btb_mapread(&hd,&info,&mapdata,fp);
+    btb_mapread(&mapdata,fp);
     fclose(fp);
 
-    printf("info: %s\n",info);
+    printf("info: %s\n",mapdata.info);
     /* for(unsigned int i = 0;i < 9;i++){ */
     /*     putchar(info[i]); */
     /* } */
-    printf("map size: %ux%u\n",hd.width,hd.height);
-    printf("pagenum: %u\n",hd.page);
+    printf("map size: %ux%u\n",mapdata.width,mapdata.height);
+    printf("pagenum: %u\n",mapdata.pagenum);
 
-    for(int i = 0;i < hd.page;i++){
-        printmap(mapdata[i],hd.width,hd.height);
+    for(int i = 0;i < mapdata.pagenum;i++){
+        printmap(mapdata.maps[i],mapdata.width,mapdata.height);
     }
-
 
     return 0;
 }
