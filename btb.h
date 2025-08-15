@@ -8,9 +8,14 @@
 
 typedef char* btb_info_t;
 typedef uint64_t btb_info_len_t;
-typedef uint16_t btb_mapcell_t;
+/* typedef uint16_t btb_mapcell_t; */
 typedef uint16_t btb_side_len_t;
 typedef uint8_t  btb_pagenum_t;
+
+typedef struct{
+    uint16_t id;
+    uint16_t set;
+}btb_mapcell_t;
 
 typedef struct{
     btb_mapcell_t *data;

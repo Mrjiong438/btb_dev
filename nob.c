@@ -26,9 +26,9 @@ int main(int argc, char **argv)
         /* if (!nob_cmd_run_sync_and_reset(&cmd)) return 1; */
         /* nob_cmd_append(&cmd, "./build/redmap", "./the4.btb"); */
         /* if (!nob_cmd_run_sync_and_reset(&cmd)) return 1; */
-        nob_cmd_append(&cmd, BUILD_FOLDER"editor");
-        if (!nob_cmd_run_sync_and_reset(&cmd)) return 1;
+        /* nob_cmd_append(&cmd, BUILD_FOLDER"editor"); */
+        /* if (!nob_cmd_run_sync_and_reset(&cmd)) return 1; */
     }
 
-    return 0;
+    return !build_success;
 }

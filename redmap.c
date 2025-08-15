@@ -6,7 +6,7 @@ void printmap(btb_map_t map,uint16_t width,uint16_t height){
     putc('\n',stdout);
     for(uint16_t y = 0;y < height;y++){
     for(uint16_t x = 0;x < width;x++){
-        switch(map.data[x + y * width]){
+        switch(map.data[x + y * width].id){
             case 0:
                 printf(" ");
                 break;
@@ -14,7 +14,7 @@ void printmap(btb_map_t map,uint16_t width,uint16_t height){
                 printf("X");
                 break;
             default:
-                printf("%u",map.data[x + y * width]);
+                printf("%u",map.data[x + y * width].id);
                 break;
         }
     }
