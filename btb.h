@@ -6,8 +6,8 @@
 
 /* max to 2^16 x 2^16*/
 
-typedef uint64_t btb_info_len_t;
 typedef char* btb_info_t;
+typedef uint64_t btb_info_len_t;
 typedef uint16_t btb_mapcell_t;
 typedef uint16_t btb_side_len_t;
 typedef uint8_t  btb_pagenum_t;
@@ -54,15 +54,21 @@ void btb_mapwrite(btb_data_t src,FILE *fp){
 
 void btb_mapread(btb_data_t *dest,FILE *fp){
     fread(&dest->info_size,sizeof(dest->info_size),1,fp);
-    /* printf("z: %zu\n",z); */
+    /* /1* printf("z: %zu\n",z); *1/ */
     dest->info = malloc(dest->info_size);
     fread(dest->info,dest->info_size,1,fp);
     fread(&dest->width,sizeof(dest->width) * 2 + sizeof(dest->pagenum),1,fp);
     dest->maps = malloc(sizeof(dest->maps[0]) * dest->pagenum);
-    dest->data = malloc(sizeof(dest->maps[0].data[0]) * dest->pagenum);
+    dest->data = malloc(sizeof(dest->maps[0].data[0]) * dest->pagenum * dest->width * dest->height);
     for(btb_pagenum_t i = 0;i < dest->pagenum;i++)
         dest->maps[i].data = dest->data + i * dest->width * dest->height;
     fread(dest->data,sizeof(dest->maps[0].data[0]),dest->width * dest->height * dest->pagenum,fp);
+}
+
+void btb_free(btb_data_t *data){
+    free(data->info);
+    free(data->maps);
+    free(data->data);
 }
 
 #endif//BUILD_TILE_BUILDER_IMPLEMENTATION_R
