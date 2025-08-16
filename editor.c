@@ -64,7 +64,20 @@ int main(){
     fonts[0] = LoadFontEx("resources/Roboto-Regular.ttf", 48, 0, 400);
     SetTextureFilter(fonts[0].texture, TEXTURE_FILTER_BILINEAR);
 
+    Vector2 mouse_position;
+    Vector2 whell_delta;
+    MouseCursor cursor_state;
+
     while(!WindowShouldClose()){
+        mouse_position = GetMousePosition();
+        /* whell_delta = GetMouseWheelMoveV(); */
+        Clay_SetPointerState(
+                (Clay_Vector2){mouse_position.x,mouse_position.y},
+                IsMouseButtonDown(0)
+        );
+        cursor_state = MOUSE_CURSOR_DEFAULT;
+        /* SetMouseCursor(MOUSE_CURSOR_DEFAULT); */
+
         Clay_SetLayoutDimensions((Clay_Dimensions){
                 .width = GetScreenWidth(),
                 .height = GetScreenHeight()
@@ -146,22 +159,75 @@ int main(){
                         }){}
                     }
                     CLAY({
-                        .id = CLAY_ID("bar_right"),
-                        .border = {
-                            .width = CLAY_BORDER_OUTSIDE(5),
-                            .color = {0,0,0,255}
-                        },
-                        .backgroundColor = COLOR_LIGHT,
+                        .id = CLAY_ID("drag_map_view"),
+                        .backgroundColor = {0,0,0,255},
                         .layout = {
+                            .sizing = {
+                                .width = CLAY_SIZING_FIXED(10),
+                                .height = CLAY_SIZING_GROW(0)
+                            }
+                        }
+                    }){
+                        if(Clay_Hovered())
+                            cursor_state = MOUSE_CURSOR_RESIZE_EW;
+                    }
+                    CLAY({
+                        .id = CLAY_ID("side_bar"),
+                        /* .border = { */
+                        /*     .width = CLAY_BORDER_OUTSIDE(5), */
+                        /*     .color = {0,0,0,255} */
+                        /* }, */
+                        /* .backgroundColor = COLOR_LIGHT, */
+                        .layout = {
+                            .layoutDirection = CLAY_TOP_TO_BOTTOM,
                             .sizing = {
                                 .width = CLAY_SIZING_FIXED(250),
                                 .height = CLAY_SIZING_GROW(0)
                             }
                         }
-                    }){}
+                    }){
+                        CLAY({
+                            .id = CLAY_ID("tiles"),
+                            .backgroundColor = COLOR_LIGHT,
+                            .layout = {
+                                .sizing = {
+                                    .width = CLAY_SIZING_GROW(0),
+                                    .height = CLAY_SIZING_GROW(0)
+                                }
+                            }
+                        }){}
+                        CLAY({
+                            .id = CLAY_ID("drag_tiles"),
+                            .backgroundColor = {0,0,0,255},
+                            .layout = {
+                                .sizing = {
+                                    .width = CLAY_SIZING_GROW(0),
+                                    .height = CLAY_SIZING_FIXED(10)
+                                }
+                            }
+                        }){
+                            if(Clay_Hovered())
+                                cursor_state = MOUSE_CURSOR_RESIZE_NS;
+                        }
+                        CLAY({
+                            .id = CLAY_ID("layer"),
+                            /* .border = { */
+                            /*     .width = CLAY_BORDER_OUTSIDE(5), */
+                            /*     .color = {0,0,0,255} */
+                            /* }, */
+                            .backgroundColor = COLOR_LIGHT,
+                            .layout = {
+                                .sizing = {
+                                    .width = CLAY_SIZING_GROW(0),
+                                    .height = CLAY_SIZING_GROW(0)
+                                }
+                            }
+                        }){}
+                    }
                 }
             }
 
+        SetMouseCursor(cursor_state);
             Clay_RenderCommandArray clay_rend_cmd = Clay_EndLayout();
 
         BeginDrawing();

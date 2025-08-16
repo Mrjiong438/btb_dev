@@ -1,7 +1,7 @@
 #define PATH_MAX 4096
 #define NOB_IMPLEMENTATION
 #include "nob.h"
-#define DEBUG "-g","-Wno-unused-parameter","-Wno-unknown-pragmas","-Wno-missing-braces"
+#define DEBUG "-g","-Wno-unused-parameter","-Wno-unused-variable","-Wno-unknown-pragmas","-Wno-missing-braces"
 #define OPFLUG "-s","-O3","-Os"
 #define LINK "-Wl,--gc-sections","-lraylib","-lGL","-lm","-lpthread","-ldl","-lrt","-lX11"
 #define LIB  "-I","./raylib-5.5_linux_amd64/include","-L","./raylib-5.5_linux_amd64/lib"

@@ -268,8 +268,26 @@ void Clay_Raylib_Render(Clay_RenderCommandArray renderCommands, Font* fonts)
                     }
                     case CUSTOM_LAYOUT_ELEMENT_TYPE_MAP_VIEW: {
                         btb_data_t *map_data = &(customElement->customData.map_view.map_data);
-                        for(unsigned int i = 0;i < map_data->width * map_data->height;i++)
-                            DrawRectangle(boundingBox.x + i * 16,boundingBox.y,16,16,RED);
+                        for(unsigned int i = 0;i < map_data->width * map_data->height;i++){
+                            switch(map_data->maps[0].data[i].id){
+                                case 1:
+                                    DrawRectangle(
+                                            boundingBox.x + (i%map_data->width) * 16,
+                                            boundingBox.y + (i/map_data->height) * 16,
+                                            16,16,
+                                            BLUE
+                                    );
+                                    break;
+                                case 3:
+                                    DrawRectangle(
+                                            boundingBox.x + (i%map_data->width) * 16,
+                                            boundingBox.y + (i/map_data->height) * 16,
+                                            16,16,
+                                            RED
+                                    );
+                                    break;
+                            }
+                        }
                     }
                     default: break;
                 }
