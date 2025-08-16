@@ -18,7 +18,7 @@ int main(int argc, char **argv)
     if (!nob_cmd_run_sync_and_reset(&cmd)) build_success = false;
     nob_cmd_append(&cmd, "gcc", "-Wall", "-Wextra", DEBUG, "redmap.c", "-o", BUILD_FOLDER"redmap");
     if (!nob_cmd_run_sync_and_reset(&cmd)) build_success = false;
-    nob_cmd_append(&cmd, "gcc", "-Wall", "-Wextra", DEBUG, "edit_raylib.c", "-o", BUILD_FOLDER"editor");
+    nob_cmd_append(&cmd, "gcc", "-Wall", "-Wextra", DEBUG, "editor.c", "-o", BUILD_FOLDER"editor");
     nob_cmd_append(&cmd, LINK, LIB);
     if (!nob_cmd_run_sync_and_reset(&cmd)) build_success = false;
     if(build_success){

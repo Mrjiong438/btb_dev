@@ -31,8 +31,6 @@ uint16_t map2_s[map_height * map_width] = {
 
 
 int main(){
-    FILE *fp = NULL;
-    fp = fopen("./the4.btb","wb");
 
     btb_mapcell_t map[map_height * map_width] = {0};
     btb_mapcell_t map2[map_height * map_width] = {0};
@@ -65,9 +63,11 @@ int main(){
     /*     printf("%d",data.maps[1].data[i]); */
     printf("btb_data_t:%zu\n",sizeof(btb_data_t));
     printf("btb_mapcell_t:%zu\n",sizeof(btb_mapcell_t));
-    btb_mapwrite(data,fp);
+    /* FILE *fp = NULL; */
+    /* fp = fopen("./the4.btb","wb"); */
+    btb_mapwrite(data,"./the4.btb");
 
-    fclose(fp);
+    /* fclose(fp); */
 
     return 0;
 }

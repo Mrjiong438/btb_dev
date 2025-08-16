@@ -27,15 +27,15 @@ int main(int argc,char *argv[]){
         fprintf(stderr,"no input\n");
         return -1;
     }
-    FILE *fp = fopen(argv[1],"rb");
-    if(fp == NULL){
-        fprintf(stderr,"open file fail\n");
-        return -1;
-    }
+    /* FILE *fp = fopen(argv[1],"rb"); */
+    /* if(fp == NULL){ */
+    /*     fprintf(stderr,"open file fail\n"); */
+    /*     return -1; */
+    /* } */
     btb_data_t mapdata = {0};
 
-    btb_mapread(&mapdata,fp);
-    fclose(fp);
+    btb_mapread(&mapdata,argv[1]);
+    /* fclose(fp); */
 
     printf("info: %s\n",mapdata.info);
     /* for(unsigned int i = 0;i < 9;i++){ */

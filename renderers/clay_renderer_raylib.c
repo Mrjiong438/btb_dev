@@ -4,6 +4,9 @@
 #include "string.h"
 #include "stdio.h"
 #include "stdlib.h"
+#define BUILD_TILE_BUILDER_IMPLEMENTATION_W
+#define BUILD_TILE_BUILDER_IMPLEMENTATION_R
+#include "../btb.h"
 
 #define CLAY_RECTANGLE_TO_RAYLIB_RECTANGLE(rectangle) (Rectangle) { .x = rectangle.x, .y = rectangle.y, .width = rectangle.width, .height = rectangle.height }
 #define CLAY_COLOR_TO_RAYLIB_COLOR(color) (Color) { .r = (unsigned char)roundf(color.r), .g = (unsigned char)roundf(color.g), .b = (unsigned char)roundf(color.b), .a = (unsigned char)roundf(color.a) }
@@ -12,7 +15,8 @@ Camera Raylib_camera;
 
 typedef enum
 {
-    CUSTOM_LAYOUT_ELEMENT_TYPE_3D_MODEL
+    CUSTOM_LAYOUT_ELEMENT_TYPE_3D_MODEL,
+    CUSTOM_LAYOUT_ELEMENT_TYPE_MAP_VIEW
 } CustomLayoutElementType;
 
 typedef struct
@@ -25,9 +29,19 @@ typedef struct
 
 typedef struct
 {
+    btb_data_t map_data;
+    //*texture
+    float x;
+    float y;
+    uint16_t zoom;
+} CustomLayoutElement_map_view;
+
+typedef struct
+{
     CustomLayoutElementType type;
     union {
         CustomLayoutElement_3DModel model;
+        CustomLayoutElement_map_view map_view;
     } customData;
 } CustomLayoutElement;
 
@@ -251,6 +265,11 @@ void Clay_Raylib_Render(Clay_RenderCommandArray renderCommands, Font* fonts)
                             DrawModel(customElement->customData.model.model, positionRay.position, customElement->customData.model.scale * scaleValue, WHITE);        // Draw 3d model with texture
                         EndMode3D();
                         break;
+                    }
+                    case CUSTOM_LAYOUT_ELEMENT_TYPE_MAP_VIEW: {
+                        btb_data_t *map_data = &(customElement->customData.map_view.map_data);
+                        for(unsigned int i = 0;i < map_data->width * map_data->height;i++)
+                            DrawRectangle(boundingBox.x + i * 16,boundingBox.y,16,16,RED);
                     }
                     default: break;
                 }

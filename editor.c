@@ -18,14 +18,29 @@ uint16_t monitor_n;
 uint16_t monitor_w;
 uint16_t monitor_h;
 uint16_t sczoom = 1;
+btb_data_t current_map;
 
 int main(){
+    btb_mapread(&current_map,"./the4.btb");
+    CustomLayoutElement cus = {
+        .type = CUSTOM_LAYOUT_ELEMENT_TYPE_MAP_VIEW,
+        .customData.map_view = (CustomLayoutElement_map_view){
+            .map_data = current_map,
+            .x = 0,
+            .y = 0,
+            .zoom = 1
+        }
+    };
+
     uint64_t clay_min_mem = Clay_MinMemorySize();
     Clay_Arena clay_mem = (Clay_Arena){
         .memory = malloc(clay_min_mem),
         .capacity = clay_min_mem
     };
+    SetTargetFPS(120);
     Clay_Raylib_Initialize(1600,1200,"btb_editor",FLAG_WINDOW_RESIZABLE);
+    /* Clay_Raylib_Initialize(2560,1440,"btb_editor",FLAG_WINDOW_RESIZABLE); */
+    /* MaximizeWindow(); */
     Clay_Initialize(
             clay_mem,(Clay_Dimensions){
                 .width = GetScreenWidth(),
@@ -43,9 +58,11 @@ int main(){
     /*     sczoom = (monitor_h / 2); */
     /* SetWindowSize(sczoom,sczoom); */
     /* SetWindowPosition((monitor_w - GetScreenWidth()) / 2,(monitor_h - GetScreenHeight()) / 2); */
+    /* ToggleFullscreen(); */
+    /* ToggleBorderlessWindowed(); */
     Font fonts[2];
     fonts[0] = LoadFontEx("resources/Roboto-Regular.ttf", 48, 0, 400);
-	SetTextureFilter(fonts[0].texture, TEXTURE_FILTER_BILINEAR);
+    SetTextureFilter(fonts[0].texture, TEXTURE_FILTER_BILINEAR);
 
     while(!WindowShouldClose()){
         Clay_SetLayoutDimensions((Clay_Dimensions){
@@ -105,23 +122,33 @@ int main(){
                     /*     .backgroundColor = COLOR_LIGHT */
                     /* }){} */
                     CLAY({
-                        .id = CLAY_ID("map_view"),
                         .layout = {
                             .sizing = {
                                 .width = CLAY_SIZING_GROW(0),
                                 .height = CLAY_SIZING_GROW(0)
-                            }
+                            },
+                            .padding = CLAY_PADDING_ALL(10)
                         }
-                    }){}
+                    }){
+                        CLAY({
+                            .id = CLAY_ID("map_view"),
+                            .custom = {.customData = &cus},
+                            /* .border = { */
+                            /*     .width = CLAY_BORDER_OUTSIDE(10), */
+                            /*     .color = COLOR_DARK */
+                            /* }, */
+                            .layout = {
+                                .sizing = {
+                                    .width = CLAY_SIZING_GROW(0),
+                                    .height = CLAY_SIZING_GROW(0)
+                                }
+                            }
+                        }){}
+                    }
                     CLAY({
                         .id = CLAY_ID("bar_right"),
                         .border = {
-                            .width = {
-                                5,
-                                5,
-                                5,
-                                5
-                            },
+                            .width = CLAY_BORDER_OUTSIDE(5),
                             .color = {0,0,0,255}
                         },
                         .backgroundColor = COLOR_LIGHT,
