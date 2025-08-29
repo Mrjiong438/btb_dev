@@ -6,7 +6,8 @@
 #include"renderers/clay_renderer_raylib.c"
 
 #define COLOR_DARK  {109,128,181,255}
-#define COLOR_LIGHT {248,248,255,255}
+/* #define COLOR_LIGHT {248,248,255,255} */
+#define COLOR_LIGHT {176,196,222,255}
 #define COLOR_BACK  {47,79,79,255}
 
 void HandleClayErrors(Clay_ErrorData errorData) {
