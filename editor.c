@@ -18,7 +18,8 @@ void HandleClayErrors(Clay_ErrorData errorData) {
 uint16_t monitor_n;
 uint16_t monitor_w;
 uint16_t monitor_h;
-uint16_t sczoom = 1;
+uint16_t window_w;
+uint16_t window_h;
 btb_data_t current_map;
 
 Vector2 mouse_position;
@@ -28,33 +29,48 @@ MouseCursor cursor_state;
 CustomLayoutElement cus;
 
 typedef enum {
-    drag_dir_H,
-    drag_dir_V
+    drag_dir_Hf,
+    drag_dir_Vf,
+    drag_dir_Hu,
+    drag_dir_Vu
 }drag_dir_t;
+//H and V for horizontal and vertical
+//f and u for float and uint16
+
+typedef enum {
+    drag_side_postive = 1,
+    drag_side_negtive = -1,
+}drag_element_side_t;//top to botton, left to right is postive
 
 bool dragging = false;
 drag_dir_t dragging_dir;
-int8_t drag_side;
+drag_element_side_t drag_side;
 uint16_t drag_limit;
 
-uint16_t *targit_size = NULL;
-uint16_t width_side_bar = 250;
-uint16_t height_tiles = 600;
+float temp_size;
+float *targit_size = NULL;
+float width_side_bar = 250;
+float height_tiles_percent = 0.5f;
 
 void update_drag_size(){
-    int temp_size;
     switch(dragging_dir){
-        case drag_dir_V:
+        case drag_dir_Vu:
             temp_size = *targit_size + drag_side * (mouse_position.y - mouse_position_last.y);
-            if     (temp_size < 0)
-                *targit_size = 0;
-            else if(temp_size > drag_limit)
-                *targit_size = drag_limit;
-            else
-                *targit_size = temp_size;
-            break;
-        case drag_dir_H:
+        break;
+        case drag_dir_Hu:
             temp_size = *targit_size + drag_side * (mouse_position.x - mouse_position_last.x);
+        break;
+        case drag_dir_Vf:
+            temp_size = *targit_size * drag_limit + drag_side * (mouse_position.y - mouse_position_last.y);
+        break;
+        case drag_dir_Hf:
+            temp_size = *targit_size * drag_limit + drag_side * (mouse_position.x - mouse_position_last.x);
+        break;
+    }
+    printf("%f,%f,%d\n",height_tiles_percent,temp_size,drag_limit);
+    switch(dragging_dir){
+        case drag_dir_Vu:
+        case drag_dir_Hu:
             if     (temp_size < 0){
                 *targit_size = 0;
             }
@@ -63,7 +79,18 @@ void update_drag_size(){
             }
             else
                 *targit_size = temp_size;
-            break;
+        break;
+        case drag_dir_Vf:
+        case drag_dir_Hf:
+            if     (temp_size < 0){
+                *targit_size = 0;
+            }
+            else if(temp_size > drag_limit - 10){
+                *targit_size = (float)(drag_limit - 10) / drag_limit;//10 as bar width
+            }
+            else
+                *targit_size = temp_size / drag_limit;
+        break;
     }
 }
 
@@ -178,7 +205,7 @@ void layout_code(){
                             .layout = {
                                 .sizing = {
                                     .width = CLAY_SIZING_GROW(0),
-                                    .height = CLAY_SIZING_FIXED(height_tiles)
+                                    .height = CLAY_SIZING_PERCENT(height_tiles_percent)
                                 }
                             }
                         }){}
@@ -213,7 +240,8 @@ void layout_code(){
                 }
             }
 }
-int main(){
+
+int main(int argc,char* argv[]){
     btb_mapread(&current_map,"./the4.btb");
     cus = (CustomLayoutElement){
         .type = CUSTOM_LAYOUT_ELEMENT_TYPE_MAP_VIEW,
@@ -231,10 +259,19 @@ int main(){
         .memory = malloc(clay_min_mem),
         .capacity = clay_min_mem
     };
+
     SetTargetFPS(120);
-    Clay_Raylib_Initialize(1600,1200,"btb_editor",FLAG_WINDOW_RESIZABLE);
+    Clay_Raylib_Initialize(0,0,"btb_editor",FLAG_WINDOW_RESIZABLE);
+    monitor_n = GetCurrentMonitor();
+    monitor_w = GetMonitorWidth(monitor_n);
+    monitor_h = GetMonitorHeight(monitor_n);
+    window_w = monitor_w * 3 / 4;
+    window_h = monitor_h * 3 / 4;
+    SetWindowSize(window_w,window_h);
+    SetWindowPosition((monitor_w - window_w) / 2,(monitor_h - window_h) / 2);
     /* Clay_Raylib_Initialize(2560,1440,"btb_editor",FLAG_WINDOW_RESIZABLE); */
     /* MaximizeWindow(); */
+
     Clay_Initialize(
             clay_mem,(Clay_Dimensions){
                 .width = GetScreenWidth(),
@@ -242,16 +279,10 @@ int main(){
             },
             (Clay_ErrorHandler) { HandleClayErrors, 0}
     );
-    /* InitWindow(1600,1200,"btb_editor"); */
-    /* monitor_n = GetCurrentMonitor(); */
-    /* monitor_w = GetMonitorWidth(monitor_n); */
-    /* monitor_h = GetMonitorHeight(monitor_n); */
     /* if((monitor_w / 2) > (monitor_h / 2)) */
     /*     sczoom = (monitor_w / 2); */
     /* else */
     /*     sczoom = (monitor_h / 2); */
-    /* SetWindowSize(sczoom,sczoom); */
-    /* SetWindowPosition((monitor_w - GetScreenWidth()) / 2,(monitor_h - GetScreenHeight()) / 2); */
     /* ToggleFullscreen(); */
     /* ToggleBorderlessWindowed(); */
     Font fonts[2];
@@ -259,12 +290,18 @@ int main(){
     SetTextureFilter(fonts[0].texture, TEXTURE_FILTER_BILINEAR);
 
     while(!WindowShouldClose()){
+        if(IsWindowResized()){
+            drag_limit = Clay_GetElementData(Clay_GetElementId(CLAY_STRING("side_bar"))).boundingBox.height;
+            temp_size = height_tiles_percent * drag_limit + drag_side * (mouse_position.y - mouse_position_last.y);
+            if(temp_size > drag_limit - 10){
+                height_tiles_percent = (float)(drag_limit - 10) / drag_limit;//10 as bar width
+            }
+        }
 
         Clay_SetLayoutDimensions((Clay_Dimensions){
                 .width = GetScreenWidth(),
                 .height = GetScreenHeight()
         });
-
         Clay_BeginLayout();
         layout_code();
         Clay_RenderCommandArray clay_rend_cmd = Clay_EndLayout();
@@ -283,24 +320,24 @@ int main(){
             if(!dragging)
                 cursor_state = MOUSE_CURSOR_RESIZE_NS;
             if(IsMouseButtonPressed(0)){
-                drag_side = 1;
+                drag_side = drag_side_postive;
                 dragging = true;
-                dragging_dir = drag_dir_V;
-                targit_size = &height_tiles;
+                dragging_dir = drag_dir_Vf;
+                targit_size = &height_tiles_percent;
                 temp_elementid = Clay_GetElementId(CLAY_STRING("side_bar"));
-                drag_limit = Clay_GetElementData(temp_elementid).boundingBox.height - 10;
+                drag_limit = Clay_GetElementData(temp_elementid).boundingBox.height;//bar_width
             }
         }
         else if(Clay_PointerOver(Clay_GetElementId(CLAY_STRING("drag_map_view")))){
             if(!dragging)
                 cursor_state = MOUSE_CURSOR_RESIZE_EW;
             if(IsMouseButtonPressed(0)){
-                drag_side = -1;
+                drag_side = drag_side_negtive;
                 dragging = true;
-                dragging_dir = drag_dir_H;
+                dragging_dir = drag_dir_Hu;
                 targit_size = &width_side_bar;
                 temp_elementid = Clay_GetElementId(CLAY_STRING("container_lower"));
-                drag_limit = Clay_GetElementData(temp_elementid).boundingBox.width - 10;
+                drag_limit = Clay_GetElementData(temp_elementid).boundingBox.width - 30;//2*pading + bar_width
             }
         }
         else if(!dragging)
