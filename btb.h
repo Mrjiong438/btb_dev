@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<stdint.h>
 #include<stdlib.h>
-/* max to 2^16 x 2^16*/
+// max to 2^16 x 2^16(65536 * 65536)
 
 typedef char* btb_info_t;
 typedef uint64_t btb_info_len_t;
