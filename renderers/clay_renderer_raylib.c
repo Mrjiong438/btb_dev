@@ -11,6 +11,10 @@
 #define CLAY_RECTANGLE_TO_RAYLIB_RECTANGLE(rectangle) (Rectangle) { .x = rectangle.x, .y = rectangle.y, .width = rectangle.width, .height = rectangle.height }
 #define CLAY_COLOR_TO_RAYLIB_COLOR(color) (Color) { .r = (unsigned char)roundf(color.r), .g = (unsigned char)roundf(color.g), .b = (unsigned char)roundf(color.b), .a = (unsigned char)roundf(color.a) }
 
+#define final_size_block (size_block * customElement->customData.map_view.zoom)
+const uint8_t size_block = 16;
+
+
 Camera Raylib_camera;
 
 typedef enum
@@ -272,17 +276,17 @@ void Clay_Raylib_Render(Clay_RenderCommandArray renderCommands, Font* fonts)
                             switch(map_data->maps[0].data[i].id){
                                 case 1:
                                     DrawRectangle(
-                                            boundingBox.x + (i%map_data->width) * 16,
-                                            boundingBox.y + (i/map_data->height) * 16,
-                                            16,16,
+                                            boundingBox.x + (i%map_data->width) * final_size_block,
+                                            boundingBox.y + (i/map_data->height) * final_size_block,
+                                            final_size_block,final_size_block,
                                             BLUE
                                     );
                                     break;
                                 case 3:
                                     DrawRectangle(
-                                            boundingBox.x + (i%map_data->width) * 16,
-                                            boundingBox.y + (i/map_data->height) * 16,
-                                            16,16,
+                                            boundingBox.x + (i%map_data->width) * final_size_block,
+                                            boundingBox.y + (i/map_data->height) * final_size_block,
+                                            final_size_block,final_size_block,
                                             RED
                                     );
                                     break;

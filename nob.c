@@ -2,9 +2,9 @@
 #define NOB_IMPLEMENTATION
 #include "nob.h"
 #define DEBUG "-g","-Wno-unused-parameter","-Wno-unused-variable","-Wno-unknown-pragmas","-Wno-missing-braces"
-#define OPFLUG "-s","-O3","-Os"
+#define OPFLUG "-s","-O2","-Os"
 #define LINK "-Wl,--gc-sections","-lraylib","-lGL","-lm","-lpthread","-ldl","-lrt","-lX11"
-#define LIB  "-I","./raylib-5.5_linux_amd64/include","-L","./raylib-5.5_linux_amd64/lib"
+#define LIB  "-I","./include","-L","./lib"
 #define BUILD_FOLDER "./build/"
 
 int main(int argc, char **argv)

@@ -26,7 +26,7 @@ Vector2 mouse_position;
 Vector2 mouse_position_last;
 Vector2 whell_delta;
 MouseCursor cursor_state;
-CustomLayoutElement cus;
+CustomLayoutElement map_view_data;
 
 typedef enum {
     drag_dir_Hf,
@@ -67,7 +67,7 @@ void update_drag_size(){
             temp_size = *targit_size * drag_limit + drag_side * (mouse_position.x - mouse_position_last.x);
         break;
     }
-    printf("%f,%f,%d\n",height_tiles_percent,temp_size,drag_limit);
+    /* printf("%f,%f,%d\n",height_tiles_percent,temp_size,drag_limit); */
     switch(dragging_dir){
         case drag_dir_Vu:
         case drag_dir_Hu:
@@ -158,7 +158,7 @@ void layout_code(){
                     }){
                         CLAY({
                             .id = CLAY_ID("map_view"),
-                            .custom = {.customData = &cus},
+                            .custom = {.customData = &map_view_data},
                             /* .border = { */
                             /*     .width = CLAY_BORDER_OUTSIDE(10), */
                             /*     .color = COLOR_DARK */
@@ -243,7 +243,7 @@ void layout_code(){
 
 int main(int argc,char* argv[]){
     btb_mapread(&current_map,"./the4.btb");
-    cus = (CustomLayoutElement){
+    map_view_data = (CustomLayoutElement){
         .type = CUSTOM_LAYOUT_ELEMENT_TYPE_MAP_VIEW,
         .customData.map_view = (CustomLayoutElement_map_view){
             .map_data = current_map,
@@ -254,7 +254,7 @@ int main(int argc,char* argv[]){
     };
 
     uint64_t clay_min_mem = Clay_MinMemorySize();
-    printf("%ld\n",clay_min_mem);
+    /* printf("%ld\n",clay_min_mem); */
     Clay_Arena clay_mem = (Clay_Arena){
         .memory = malloc(clay_min_mem),
         .capacity = clay_min_mem
@@ -297,6 +297,16 @@ int main(int argc,char* argv[]){
                 height_tiles_percent = (float)(drag_limit - 10) / drag_limit;//10 as bar width
             }
         }
+#define debug_print_zoom printf("%d\n",map_view_data.customData.map_view.zoom)
+        if(IsKeyPressed(KEY_MINUS)){
+            debug_print_zoom;
+            if(map_view_data.customData.map_view.zoom > 1) map_view_data.customData.map_view.zoom--;
+        }
+        if(IsKeyPressed(KEY_EQUAL)){
+            debug_print_zoom;
+            map_view_data.customData.map_view.zoom++;
+        }
+
 
         Clay_SetLayoutDimensions((Clay_Dimensions){
                 .width = GetScreenWidth(),
@@ -311,7 +321,7 @@ int main(int argc,char* argv[]){
         /* whell_delta = GetMouseWheelMoveV(); */
         Clay_SetPointerState(
                 (Clay_Vector2){mouse_position.x,mouse_position.y},
-                IsMouseButtonDown(0)
+                IsMouseButtonDown(MOUSE_BUTTON_LEFT)
         );
 
 
@@ -319,7 +329,7 @@ int main(int argc,char* argv[]){
         if     (Clay_PointerOver(temp_elementid = Clay_GetElementId(CLAY_STRING("drag_tiles")))){
             if(!dragging)
                 cursor_state = MOUSE_CURSOR_RESIZE_NS;
-            if(IsMouseButtonPressed(0)){
+            if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
                 drag_side = drag_side_postive;
                 dragging = true;
                 dragging_dir = drag_dir_Vf;
@@ -331,7 +341,7 @@ int main(int argc,char* argv[]){
         else if(Clay_PointerOver(Clay_GetElementId(CLAY_STRING("drag_map_view")))){
             if(!dragging)
                 cursor_state = MOUSE_CURSOR_RESIZE_EW;
-            if(IsMouseButtonPressed(0)){
+            if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
                 drag_side = drag_side_negtive;
                 dragging = true;
                 dragging_dir = drag_dir_Hu;
@@ -346,7 +356,7 @@ int main(int argc,char* argv[]){
         if(dragging){
             update_drag_size();
         }
-        if(IsMouseButtonReleased(0)){
+        if(IsMouseButtonReleased(MOUSE_BUTTON_LEFT)){
             dragging = false;
         }
 
