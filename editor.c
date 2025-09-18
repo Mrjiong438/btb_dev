@@ -9,6 +9,8 @@
 /* #define COLOR_LIGHT {248,248,255,255} */
 #define COLOR_LIGHT {176,196,222,255}
 #define COLOR_BACK  {47,79,79,255}
+/* #define final_size_block (size_block * map_view_data.customData.map_view.zoom) */
+/* const uint8_t size_block = 16; */
 
 void HandleClayErrors(Clay_ErrorData errorData) {
     // See the Clay_ErrorData struct for more information
@@ -24,9 +26,12 @@ btb_data_t current_map;
 
 Vector2 mouse_position;
 Vector2 mouse_position_last;
+#define MAP_ZOOM (map_view_data.customData.map_view.zoom)
+#define TILE_ZOOM (tile_view_data.customData.map_view.zoom)
 Vector2 whell_delta;
 MouseCursor cursor_state;
 CustomLayoutElement map_view_data;
+CustomLayoutElement tile_view_data;
 
 typedef enum {
     drag_dir_Hf,
@@ -48,9 +53,14 @@ drag_element_side_t drag_side;
 uint16_t drag_limit;
 
 float temp_size;
+Clay_ElementId temp_elementid;
+Clay_ElementData temp_elementdata;
 float *targit_size = NULL;
 float width_side_bar = 250;
 float height_tiles_percent = 0.5f;
+
+/* int64_t block_point_at; */
+#define bpa_map (map_view_data.customData.map_view.block_point_at)
 
 void update_drag_size(){
     switch(dragging_dir){
@@ -208,7 +218,18 @@ void layout_code(){
                                     .height = CLAY_SIZING_PERCENT(height_tiles_percent)
                                 }
                             }
-                        }){}
+                        }){
+                            CLAY({
+                                .id = CLAY_ID("tile_view"),
+                                .custom = {.customData = &tile_view_data},
+                                .layout = {
+                                    .sizing = {
+                                        .width = CLAY_SIZING_GROW(0),
+                                        .height = CLAY_SIZING_GROW(0)
+                                    }
+                                }
+                            }){}
+                        }
                         CLAY({
                             .id = CLAY_ID("drag_tiles"),
                             .backgroundColor = {0,0,0,255},
@@ -247,6 +268,7 @@ int main(int argc,char* argv[]){
         .type = CUSTOM_LAYOUT_ELEMENT_TYPE_MAP_VIEW,
         .customData.map_view = (CustomLayoutElement_map_view){
             .map_data = current_map,
+            .block_point_at = UINT64_MAX,
             .x = 0,
             .y = 0,
             .zoom = 1
@@ -297,16 +319,22 @@ int main(int argc,char* argv[]){
                 height_tiles_percent = (float)(drag_limit - 10) / drag_limit;//10 as bar width
             }
         }
+
+        mouse_position_last = mouse_position;
+        mouse_position = GetMousePosition();
+        /* whell_delta = GetMouseWheelMoveV(); */
+
+        //zoom input
 #define debug_print_zoom printf("%d\n",map_view_data.customData.map_view.zoom)
         if(IsKeyPressed(KEY_MINUS)){
             debug_print_zoom;
-            if(map_view_data.customData.map_view.zoom > 1) map_view_data.customData.map_view.zoom--;
+            if(map_view_data.customData.map_view.zoom > 1)
+            map_view_data.customData.map_view.zoom--;
         }
         if(IsKeyPressed(KEY_EQUAL)){
             debug_print_zoom;
             map_view_data.customData.map_view.zoom++;
         }
-
 
         Clay_SetLayoutDimensions((Clay_Dimensions){
                 .width = GetScreenWidth(),
@@ -316,16 +344,12 @@ int main(int argc,char* argv[]){
         layout_code();
         Clay_RenderCommandArray clay_rend_cmd = Clay_EndLayout();
 
-        mouse_position_last = mouse_position;
-        mouse_position = GetMousePosition();
-        /* whell_delta = GetMouseWheelMoveV(); */
         Clay_SetPointerState(
                 (Clay_Vector2){mouse_position.x,mouse_position.y},
                 IsMouseButtonDown(MOUSE_BUTTON_LEFT)
         );
 
-
-        Clay_ElementId temp_elementid;
+        //drag handling
         if     (Clay_PointerOver(temp_elementid = Clay_GetElementId(CLAY_STRING("drag_tiles")))){
             if(!dragging)
                 cursor_state = MOUSE_CURSOR_RESIZE_NS;
@@ -362,6 +386,23 @@ int main(int argc,char* argv[]){
 
         SetMouseCursor(cursor_state);
 
+        //get block point at
+        temp_elementdata = Clay_GetElementData(Clay_GetElementId(CLAY_STRING("map_view")));
+        if(
+            mouse_position.x >= temp_elementdata.boundingBox.x
+            && mouse_position.x <= temp_elementdata.boundingBox.x + 8 * 16 * MAP_ZOOM
+            &&
+            mouse_position.y >= temp_elementdata.boundingBox.y
+            && mouse_position.y <= temp_elementdata.boundingBox.y + 8 * 16 * MAP_ZOOM
+        ){
+            map_view_data.customData.map_view.block_point_at = 
+                (int)(mouse_position.x - temp_elementdata.boundingBox.x - map_view_data.customData.map_view.x) / (16 * MAP_ZOOM)
+                + (((int)(mouse_position.y - temp_elementdata.boundingBox.y - map_view_data.customData.map_view.y) / (16 * MAP_ZOOM)) * 8);
+        }
+        else{
+            map_view_data.customData.map_view.block_point_at= UINT64_MAX;
+        }
+        printf("%lu\n",map_view_data.customData.map_view.block_point_at);
 
         BeginDrawing();
             ClearBackground(BLACK);

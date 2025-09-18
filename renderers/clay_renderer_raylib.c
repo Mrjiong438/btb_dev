@@ -11,6 +11,7 @@
 #define CLAY_RECTANGLE_TO_RAYLIB_RECTANGLE(rectangle) (Rectangle) { .x = rectangle.x, .y = rectangle.y, .width = rectangle.width, .height = rectangle.height }
 #define CLAY_COLOR_TO_RAYLIB_COLOR(color) (Color) { .r = (unsigned char)roundf(color.r), .g = (unsigned char)roundf(color.g), .b = (unsigned char)roundf(color.b), .a = (unsigned char)roundf(color.a) }
 
+#define MAP_ZOOM (map_view_data.customData.map_view.zoom)
 #define final_size_block (size_block * customElement->customData.map_view.zoom)
 const uint8_t size_block = 16;
 
@@ -35,6 +36,7 @@ typedef struct
 {
     btb_data_t map_data;
     //*texture
+    uint64_t block_point_at;
     float x;
     float y;
     uint16_t zoom;
