@@ -5,7 +5,7 @@
 #define map_height 8
 #define version_num
 
-uint16_t map_s[map_height * map_width] = {
+uint32_t map_s[map_height * map_width] = {
     3,0,0,1,1,0,0,3,
     0,0,0,1,1,0,0,0,
     0,0,0,0,0,0,0,0,
@@ -16,7 +16,7 @@ uint16_t map_s[map_height * map_width] = {
     3,0,0,0,1,0,0,3
 };
 
-uint16_t map2_s[map_height * map_width] = {
+uint32_t map2_s[map_height * map_width] = {
     3,0,0,0,1,0,0,3,
     0,0,0,0,1,0,0,0,
     0,0,0,0,1,0,0,0,
@@ -36,8 +36,8 @@ int main(){
     btb_mapcell_t map2[map_height * map_width] = {0};
 
     for(unsigned int i = 0;i < map_width * map_height;i++){
-        map[i].id = map_s[i];
-        map2[i].id = map2_s[i];
+        map[i] = map_s[i];
+        map2[i] = map2_s[i];
     }
 
     btb_map_t

@@ -259,6 +259,25 @@ void layout_code(){
                         }){}
                     }
                 }
+                CLAY({
+                    .id = CLAY_ID("bottom_bar"),
+                    .backgroundColor = COLOR_LIGHT,
+                    .border = {
+                        .width = {
+                            0,
+                            0,
+                            10,
+                            0
+                        },
+                        .color = {0,0,0,255}
+                    },
+                    .layout = {
+                        .sizing = {
+                            .width = CLAY_SIZING_GROW(0),
+                            .height = CLAY_SIZING_FIXED(60)
+                        }
+                    }
+                }){}
             }
 }
 
@@ -325,7 +344,7 @@ int main(int argc,char* argv[]){
         /* whell_delta = GetMouseWheelMoveV(); */
 
         //zoom input
-#define debug_print_zoom printf("%d\n",map_view_data.customData.map_view.zoom)
+#define debug_print_zoom //printf("%d\n",map_view_data.customData.map_view.zoom)
         if(IsKeyPressed(KEY_MINUS)){
             debug_print_zoom;
             if(map_view_data.customData.map_view.zoom > 1)
@@ -402,7 +421,7 @@ int main(int argc,char* argv[]){
         else{
             map_view_data.customData.map_view.block_point_at= UINT64_MAX;
         }
-        printf("%lu\n",map_view_data.customData.map_view.block_point_at);
+        /* printf("%lu\n",map_view_data.customData.map_view.block_point_at); */
 
         BeginDrawing();
             ClearBackground(BLACK);

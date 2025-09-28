@@ -1,3 +1,6 @@
+#ifndef BUILD_TILE_BUILDER
+#define BUILD_TILE_BUILDER
+
 #include<stdio.h>
 #include<stdint.h>
 #include<stdlib.h>
@@ -5,14 +8,14 @@
 
 typedef char* btb_info_t;
 typedef uint64_t btb_info_len_t;
-/* typedef uint16_t btb_mapcell_t; */
+typedef uint32_t btb_mapcell_t;
 typedef uint16_t btb_side_len_t;
 typedef uint8_t  btb_pagenum_t;
 
-typedef struct{
-    uint16_t id;
-    uint8_t set;
-}btb_mapcell_t;
+/* typedef struct{ */
+/*     uint16_t id; */
+/*     uint8_t set; */
+/* }btb_mapcell_t; */
 
 typedef struct{
     btb_mapcell_t *data;
@@ -32,9 +35,6 @@ typedef struct{
 void btb_mapwrite(btb_data_t src,const char* fpath);
 /* void btb_mapread(btb_head_data *hd,void **info,btb_mapcell_t ***mapdata,FILE *fp); */
 void btb_mapread(btb_data_t *dest,const char* fpath);
-
-#ifndef BUILD_TILE_BUILDER
-#define BUILD_TILE_BUILDER
 
 #ifdef BUILD_TILE_BUILDER_IMPLEMENTATION_W
 

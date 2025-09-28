@@ -275,7 +275,7 @@ void Clay_Raylib_Render(Clay_RenderCommandArray renderCommands, Font* fonts)
                     case CUSTOM_LAYOUT_ELEMENT_TYPE_MAP_VIEW: {
                         btb_data_t *map_data = &(customElement->customData.map_view.map_data);
                         for(unsigned int i = 0;i < map_data->width * map_data->height;i++){
-                            switch(map_data->maps[0].data[i].id){
+                            switch(map_data->maps[0].data[i]){
                                 case 1:
                                     DrawRectangle(
                                             boundingBox.x + (i%map_data->width) * final_size_block,
